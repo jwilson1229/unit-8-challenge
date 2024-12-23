@@ -1,12 +1,16 @@
-// importing classes from other files
 import inquirer from "inquirer";
 import Car from "./Car.js";
+import Truck from "./Truck.js";
+import Motorbike from "./Motorbike.js";
 // define the Cli class
 class Cli {
     // TODO: Update the constructor to accept Truck and Motorbike objects as well
-    constructor(vehicles) {
+       // TODO: Update the constructor to accept Truck and Motorbike objects as well
+       constructor(vehicles, Truck, Motorbike) {
         this.exit = false;
         this.vehicles = vehicles;
+        this.Truck = Truck;
+        this.Motorbike = Motorbike;
     }
     // static method to generate a vin
     static generateVin() {
@@ -46,16 +50,24 @@ class Cli {
                 name: 'vehicleType',
                 message: 'Select a vehicle type',
                 // TODO: Update the choices array to include Truck and Motorbike
-                choices: ['Car'],
+                choices: ['Car', 'Truck', 'Motorbike'],
             },
         ])
             .then((answers) => {
             if (answers.vehicleType === 'Car') {
                 // create a car
                 this.createCar();
+            } else if (answers.vehicleType === 'Truck') {
+                this.createTruck();
+            } else if (answers.vehicleType === 'Motorbike'){
+                this.createMotorbike();
+            } else{
+                console.log("Invalid type selected");
             }
+                
+            });
             // TODO: add statements to create a truck or motorbike if the user selects the respective vehicle type
-        });
+        }
     }
     // method to create a car
     createCar() {
@@ -145,6 +157,11 @@ class Cli {
             },
         ])
             .then((answers) => {
+                const truck = newTruck(
+                    Cli.generateVin(), answers.color, answers.make, answers.model, parseInt(answers.year), parseInt(answers.weight), parseInt(answers.topSpeed), parseInt(answers.towingCapacity), []);
+                    this.vehicles.push(truck)
+                    this.selectedVehicleVin = truck.vin;
+                    this.performActions();
             // TODO: Use the answers object to pass the required properties to the Truck constructor
             // TODO: push the truck to the vehicles array
             // TODO: set the selectedVehicleVin to the vin of the truck
@@ -207,6 +224,11 @@ class Cli {
             },
         ])
             .then((answers) => {
+                const motorbike = newMotorbike(
+                    Cli.generateVin(), answers.color, answers.make, answers.model, parseInt(answers.year), parseInt(answers.weight), parseInt(answers.topSpeed), parseInt(answers.frontWheelDiameter), answers.frontWheelBrand, parseInt(answers.rearWheelDiameter), answers.rearWheelBrand, []);
+                    this.vehicles.push(motorbike)
+                    this.selectedVehicleVin = motorbike.vin;
+                    this.performActions();
             // TODO: Use the answers object to pass the required properties to the Motorbike constructor
             // TODO: push the motorbike to the vehicles array
             // TODO: set the selectedVehicleVin to the vin of the motorbike
@@ -215,7 +237,7 @@ class Cli {
     }
     // method to find a vehicle to tow
     // TODO: add a parameter to accept a truck object
-    findVehicleToTow() {
+    findVehicleToTow(Truck) {
         inquirer
             .prompt([
             {
@@ -232,6 +254,12 @@ class Cli {
         ])
             .then((answers) => {
             // TODO: check if the selected vehicle is the truck
+            if (answers === Truck){
+                console.log('The truck cannot tow itself!');
+                this.findVehicleToTow();
+            } else {
+                this.
+            }
             // TODO: if it is, log that the truck cannot tow itself then perform actions on the truck to allow the user to select another action
             // TODO: if it is not, tow the selected vehicle then perform actions on the truck to allow the user to select another action
         });
@@ -254,6 +282,8 @@ class Cli {
                     'Turn right',
                     'Turn left',
                     'Reverse',
+                    'Pull a Mater and Tow!',
+                    'Wheelie!',
                     'Select or create another vehicle',
                     'Exit',
                 ],
@@ -363,6 +393,7 @@ class Cli {
             }
         });
     }
-}
+
 // export the Cli class
 export default Cli;
+
